@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="nms"
+  id="myeclipse.1383888620279"
+  context-root="/nms"
+  j2ee-spec="6.0"
+  archive="nms.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+
