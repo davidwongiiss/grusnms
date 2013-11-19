@@ -1,4 +1,4 @@
-package com.grus.nms.util;
+package com.grus.nms.deamon.monitor.util;
 
 import java.io.InputStream;
 
@@ -10,38 +10,38 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * æœ¬ç±»æ˜¯ä¸“é—¨è§£æXMLæ–‡ä»¶çš„ï¼Œä¸»è¦ç”¨äºä¸ºç³»ç»Ÿè¯»å–è‡ªå·±çš„é…ç½®æ–‡ä»¶æ—¶æä¾›æœ€æ–¹ä¾¿çš„è§£ææ“ä½œ
+ * ±¾ÀàÊÇ×¨ÃÅ½âÎöXMLÎÄ¼şµÄ£¬Ö÷ÒªÓÃÓÚÎªÏµÍ³¶ÁÈ¡×Ô¼ºµÄÅäÖÃÎÄ¼şÊ±Ìá¹©×î·½±ãµÄ½âÎö²Ù×÷
  *
  */
 public class XmlManager {
 	
 	/**
-	 * å¾—åˆ°æŸèŠ‚ç‚¹ä¸‹æŸä¸ªå±æ€§çš„å€¼
-	 * @param element	è¦è·å–å±æ€§çš„èŠ‚ç‚¹
-	 * @param attributeName	è¦å–å€¼çš„å±æ€§åç§°
-	 * @return	è¦è·å–çš„å±æ€§çš„å€¼
+	 * µÃµ½Ä³½ÚµãÏÂÄ³¸öÊôĞÔµÄÖµ
+	 * @param element	Òª»ñÈ¡ÊôĞÔµÄ½Úµã
+	 * @param attributeName	ÒªÈ¡ÖµµÄÊôĞÔÃû³Æ
+	 * @return	Òª»ñÈ¡µÄÊôĞÔµÄÖµ
 	 */
 	public static String getAttribute( Element element, String attributeName ) {
 		return element.getAttribute( attributeName );
 	}
 	
 	/**
-	 * è·å–æŒ‡å®šèŠ‚ç‚¹ä¸‹çš„æ–‡æœ¬
-	 * @param element	è¦è·å–æ–‡æœ¬çš„èŠ‚ç‚¹
-	 * @return	æŒ‡å®šèŠ‚ç‚¹ä¸‹çš„æ–‡æœ¬
+	 * »ñÈ¡Ö¸¶¨½ÚµãÏÂµÄÎÄ±¾
+	 * @param element	Òª»ñÈ¡ÎÄ±¾µÄ½Úµã
+	 * @return	Ö¸¶¨½ÚµãÏÂµÄÎÄ±¾
 	 */
 	public static String getText( Element element ) {
 		return element.getFirstChild().getNodeValue();
 	}
 	
 	/**
-	 * è§£ææŸä¸ªxmlæ–‡ä»¶ï¼Œå¹¶åœ¨å†…å­˜ä¸­åˆ›å»ºDOMæ ‘
-	 * @param xmlFile	è¦è§£æçš„XMLæ–‡ä»¶
-	 * @return	è§£ææŸä¸ªé…ç½®æ–‡ä»¶åçš„Document
-	 * @throws Exception	xmlæ–‡ä»¶ä¸å­˜åœ¨
+	 * ½âÎöÄ³¸öxmlÎÄ¼ş£¬²¢ÔÚÄÚ´æÖĞ´´½¨DOMÊ÷
+	 * @param xmlFile	Òª½âÎöµÄXMLÎÄ¼ş
+	 * @return	½âÎöÄ³¸öÅäÖÃÎÄ¼şºóµÄDocument
+	 * @throws Exception	xmlÎÄ¼ş²»´æÔÚ
 	 */
 	public static Document parse(InputStream is) throws Exception {
-		// ç»‘å®šXMLæ–‡ä»¶ï¼Œå»ºé€ DOMæ ‘
+		// °ó¶¨XMLÎÄ¼ş£¬½¨ÔìDOMÊ÷
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document domTree = db.parse(is);
@@ -49,14 +49,14 @@ public class XmlManager {
 	}
 	
 	/**
-	 * è·å¾—æŸèŠ‚ç‚¹ä¸‹çš„æŸä¸ªå­èŠ‚ç‚¹ï¼ˆæŒ‡å®šå­èŠ‚ç‚¹åç§°ï¼Œå’ŒæŸä¸ªå±æ€§çš„å€¼ï¼‰<br>
-	 * å³è·å–parentElementä¸‹åå­—å«childNameï¼Œå¹¶ä¸”å±æ€§attributeNameçš„å€¼ä¸ºattributeValueçš„å­ç»“ç‚¹
-	 * @param parentElement	è¦è·å–å­èŠ‚ç‚¹çš„é‚£ä¸ªçˆ¶èŠ‚ç‚¹
-	 * @param childName	è¦è·å–çš„å­èŠ‚ç‚¹åç§°
-	 * @param attributeName	è¦æŒ‡å®šçš„å±æ€§åç§°
-	 * @param attributeValue	è¦æŒ‡å®šçš„å±æ€§çš„å€¼ 
-	 * @return	ç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹
-	 * @throws Exception	å­ç»“ç‚¹ä¸å­˜åœ¨æˆ–æœ‰å¤šä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹
+	 * »ñµÃÄ³½ÚµãÏÂµÄÄ³¸ö×Ó½Úµã£¨Ö¸¶¨×Ó½ÚµãÃû³Æ£¬ºÍÄ³¸öÊôĞÔµÄÖµ£©<br>
+	 * ¼´»ñÈ¡parentElementÏÂÃû×Ö½ĞchildName£¬²¢ÇÒÊôĞÔattributeNameµÄÖµÎªattributeValueµÄ×Ó½áµã
+	 * @param parentElement	Òª»ñÈ¡×Ó½ÚµãµÄÄÇ¸ö¸¸½Úµã
+	 * @param childName	Òª»ñÈ¡µÄ×Ó½ÚµãÃû³Æ
+	 * @param attributeName	ÒªÖ¸¶¨µÄÊôĞÔÃû³Æ
+	 * @param attributeValue	ÒªÖ¸¶¨µÄÊôĞÔµÄÖµ 
+	 * @return	·ûºÏÌõ¼şµÄ×Ó½Úµã
+	 * @throws Exception	×Ó½áµã²»´æÔÚ»òÓĞ¶à¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã
 	 */
 	public static Element getChildElement( Element parentElement, String childName, String attributeName, String attributeValue ) throws Exception {
 		NodeList list = parentElement.getElementsByTagName( childName );
@@ -71,21 +71,21 @@ public class XmlManager {
 			}
 		}
 		if ( 0 == count ) {
-			throw new Exception( "æ‰¾ä¸åˆ°ä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹ï¼" );
+			throw new Exception( "ÕÒ²»µ½¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã£¡" );
 		} else if ( 1 < count ) {
-			throw new Exception( "æ‰¾åˆ°å¤šä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹ï¼" );
+			throw new Exception( "ÕÒµ½¶à¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã£¡" );
 		}
 		
 		return curElement;
 	}
 	
 	/**
-	 * å¾—åˆ°æŸèŠ‚ç‚¹ä¸‹çš„æŸä¸ªå­èŠ‚ç‚¹ï¼ˆé€šè¿‡æŒ‡å®šå­èŠ‚ç‚¹åç§°ï¼‰<br>
-	 * å³è·å–parentElementä¸‹åå­—å«childNameçš„å­èŠ‚ç‚¹
-	 * @param parentElement	è¦è·å–å­èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹
-	 * @param childName	è¦è·å–çš„å­èŠ‚ç‚¹åç§°
-	 * @return	ç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹
-	 * @throws Exception	æ‰¾ä¸åˆ°ç¬¦åˆæ¡ä»¶çš„å­ç»“ç‚¹æˆ–æ‰¾åˆ°å¤šä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹
+	 * µÃµ½Ä³½ÚµãÏÂµÄÄ³¸ö×Ó½Úµã£¨Í¨¹ıÖ¸¶¨×Ó½ÚµãÃû³Æ£©<br>
+	 * ¼´»ñÈ¡parentElementÏÂÃû×Ö½ĞchildNameµÄ×Ó½Úµã
+	 * @param parentElement	Òª»ñÈ¡×Ó½ÚµãµÄ¸¸½Úµã
+	 * @param childName	Òª»ñÈ¡µÄ×Ó½ÚµãÃû³Æ
+	 * @return	·ûºÏÌõ¼şµÄ×Ó½Úµã
+	 * @throws Exception	ÕÒ²»µ½·ûºÏÌõ¼şµÄ×Ó½áµã»òÕÒµ½¶à¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã
 	 */
 	public static Element getChildElement( Element parentElement, String childName ) throws Exception {
 		NodeList list = parentElement.getElementsByTagName( childName );
@@ -93,9 +93,9 @@ public class XmlManager {
 		if ( 1 == list.getLength()  ) {
 			curElement = ( Element )list.item( 0 );
 		} else if ( 0 == list.getLength() ) {
-			throw new Exception( "æ‰¾ä¸åˆ°ä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹ï¼" );
+			throw new Exception( "ÕÒ²»µ½¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã£¡" );
 		} else {
-			throw new Exception( "æ‰¾åˆ°å¤šä¸ªç¬¦åˆæ¡ä»¶çš„å­èŠ‚ç‚¹ï¼" );
+			throw new Exception( "ÕÒµ½¶à¸ö·ûºÏÌõ¼şµÄ×Ó½Úµã£¡" );
 		}
 		return curElement;
 	}

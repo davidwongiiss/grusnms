@@ -23,31 +23,7 @@
 	<!-- <dependencies> <dependency> <groupId>com.grus.nms.deamon.discovery</groupId> 
 		<artifactId>discovery</artifactId> <version>${project.version}</version> 
 		</dependency> </dependencies> -->
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<!-- append assembly id in release file name -->
-					<!--  --><appendAssemblyId>false</appendAssemblyId>-->
-            <descriptors>
-              <descriptor>src/assemble/assembly.xml</descriptor>
-            </descriptors>
-				</configuration>
-				<!--
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				-->
-			</plugin>
-		</plugins>
-	</build>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

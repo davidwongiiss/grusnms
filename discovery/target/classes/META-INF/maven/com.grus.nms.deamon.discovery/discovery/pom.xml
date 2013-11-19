@@ -11,19 +11,29 @@
    
 	<dependencies>
 		<dependency>
-			<!-- postgresql jdbc -->
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.0-801.jdbc4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.snmp4j</groupId>
+			<artifactId>snmp4j</artifactId>
+			<version>1.10.1</version>
+		</dependency>	
+		<!-- 	
+		<dependency>
 			<groupId>postgresqldriver</groupId>
 			<artifactId>postgresqldriver</artifactId>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/../lib/postgresql-9.2-1002.jdbc4.jar</systemPath>
 		</dependency>
 		<dependency>
-			<!-- snmp4j-2.2.3 -->
 			<groupId>snmp4j-2.2.3</groupId>
 			<artifactId>snmp4j-2.2.3</artifactId>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/../lib/snmp4j-2.2.3.jar</systemPath>
 		</dependency>
+		 -->
 	</dependencies>
 	<!-- 
 	  <build>
