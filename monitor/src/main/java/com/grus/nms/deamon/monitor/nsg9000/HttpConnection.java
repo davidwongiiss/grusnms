@@ -249,7 +249,7 @@ public final class HttpConnection {
 	public String getQamData() {
 		return this.send("<?xml version='1.0'?><NSG><BLADETRAFFIC Action='GET'/></NSG>");
 	}
-
+	
 	public String getEvents() {
 		return this.send("<?xml version='1.0'?><NSG><STATUS Action='GET'/></NSG>");
 	}
