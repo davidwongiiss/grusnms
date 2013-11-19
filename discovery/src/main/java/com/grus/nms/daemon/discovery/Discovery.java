@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.discovery;
+package com.grus.nms.daemon.discovery;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -339,7 +339,7 @@ public class Discovery {
 	public static void main(String args[]) {
 		InputStream inStream = null;
 		
-		inStream = Discovery.class.getClassLoader().getResourceAsStream("conf/deamon.discovery.properties");
+		inStream = Discovery.class.getClassLoader().getResourceAsStream("conf/daemon.discovery.properties");
 		
 		Properties props = new Properties();
 		try {

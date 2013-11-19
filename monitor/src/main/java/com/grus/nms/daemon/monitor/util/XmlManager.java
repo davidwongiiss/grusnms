@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.monitor.util;
+package com.grus.nms.daemon.monitor.util;
 
 import java.io.InputStream;
 

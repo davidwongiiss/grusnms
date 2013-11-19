@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.monitor.nsg9000;
+package com.grus.nms.daemon.monitor.nsg9000;
 
 import java.io.IOException;
 import java.nio.charset.CodingErrorAction;

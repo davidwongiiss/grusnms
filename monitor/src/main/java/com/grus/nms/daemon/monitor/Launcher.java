@@ -1,6 +1,6 @@
-package com.grus.nms.deamon.monitor;
+package com.grus.nms.daemon.monitor;
 
-import com.grus.nms.deamon.monitor.nsg9000.Monitor;
+import com.grus.nms.daemon.monitor.nsg9000.Monitor;
 
 /**
  * º‡ ”¿‡

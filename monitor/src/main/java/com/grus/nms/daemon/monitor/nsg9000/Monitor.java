@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.monitor.nsg9000;
+package com.grus.nms.daemon.monitor.nsg9000;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,10 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.grus.nms.deamon.monitor.nsg9000.pojo.EventValue;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.GbeValue;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.Node;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.QamValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.EventValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.GbeValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.Node;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.QamValue;
 
 /**
  * º‡ ”¿‡
@@ -277,7 +277,7 @@ public class Monitor {
 
 	public void start() throws Exception {
 		InputStream inStream = null;
-		inStream = Monitor.class.getClassLoader().getResourceAsStream("conf/deamon.monitor.properties");
+		inStream = Monitor.class.getClassLoader().getResourceAsStream("conf/daemon.monitor.properties");
 		if (inStream == null) {
 			throw new Exception("dasdas");
 		}

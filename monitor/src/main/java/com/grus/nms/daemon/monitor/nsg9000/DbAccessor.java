@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.monitor.nsg9000;
+package com.grus.nms.daemon.monitor.nsg9000;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,10 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.grus.nms.deamon.monitor.nsg9000.pojo.EventValue;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.GbeValue;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.Node;
-import com.grus.nms.deamon.monitor.nsg9000.pojo.QamValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.EventValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.GbeValue;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.Node;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.QamValue;
 
 public class DbAccessor {
 	private Connection conn;
