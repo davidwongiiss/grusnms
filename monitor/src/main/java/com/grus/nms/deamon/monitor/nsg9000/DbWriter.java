@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.grus.nms.deamon.monitor.pojo.EventValue;
-import com.grus.nms.deamon.monitor.pojo.GbeValue;
-import com.grus.nms.deamon.monitor.pojo.QamValue;
+import com.grus.nms.deamon.monitor.nsg9000.pojo.EventValue;
+import com.grus.nms.deamon.monitor.nsg9000.pojo.GbeValue;
+import com.grus.nms.deamon.monitor.nsg9000.pojo.QamValue;
 
 public class DbWriter {
 	private Connection conn;

@@ -1,4 +1,4 @@
-package com.grus.nms.deamon.monitor.pojo;
+package com.grus.nms.deamon.monitor.nsg9000.pojo;
 
 import java.util.Date;
 
