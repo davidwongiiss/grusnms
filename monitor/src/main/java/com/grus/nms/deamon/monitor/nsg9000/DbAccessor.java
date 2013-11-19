@@ -4,16 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.grus.nms.deamon.monitor.nsg9000.pojo.EventValue;
 import com.grus.nms.deamon.monitor.nsg9000.pojo.GbeValue;
+import com.grus.nms.deamon.monitor.nsg9000.pojo.Node;
 import com.grus.nms.deamon.monitor.nsg9000.pojo.QamValue;
 
-public class DbWriter {
+public class DbAccessor {
 	private Connection conn;
 
-	public DbWriter(Connection conn) {
+	public DbAccessor(Connection conn) {
 		this.conn = conn;
 	}
 
@@ -141,16 +143,16 @@ public class DbWriter {
 							+ " numofservices12=?,numofservices13=?,numofservices14=?,numofservices15=?,numofservices16=?,create_time=? WHERE node_id = ? ";
 				}
 				else {
-					sqls[0] = "INSERT INTO grusnms.qam_cur_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16," +
-					     " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16," +
-					     " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11," +
-					     " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+					sqls[0] = "INSERT INTO grusnms.qam_cur_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
+							+ " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16,"
+							+ " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11,"
+							+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 				}
 
-				sqls[1] = "INSERT INTO grusnms.qam_day_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16," +
-				     " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16," +
-				     " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11," +
-				     " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+				sqls[1] = "INSERT INTO grusnms.qam_day_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
+						+ " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16,"
+						+ " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11,"
+						+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 				for (int m = 0; m < 2; m++) {
 					try {
@@ -316,5 +318,43 @@ public class DbWriter {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * get nodes
+	 * @param conn
+	 * @return
+	 */
+	public static List<Node> getAllNodes(Connection conn) {
+		List<Node> list = new ArrayList<Node>();
+		String sql = "SELECT id, name,model,description,mac,ip, ipv6,create_time, update_time,creator,updater FROM grusbiz.nodes  ";
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+
+			ResultSet rs = pstmt.executeQuery();
+			Node node = null;
+			while (rs.next()) {
+				node = new Node();
+				node.setId(rs.getString(1));
+				node.setName(rs.getString(2));
+				node.setModel(rs.getString(3));
+				node.setDescriptioin(rs.getString(4));
+				node.setMac(rs.getString(5));
+				node.setIp(rs.getString(6));
+				node.setIpv6(rs.getString(7));
+				node.setCreateTime(rs.getDate(8));
+				node.setUpdateTime(rs.getDate(9));
+				node.setCreator(rs.getString(10));
+				node.setUpdater(rs.getString(11));
+				list.add(node);
+			}
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return list;
 	}
 }

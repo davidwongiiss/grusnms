@@ -226,7 +226,7 @@ public class Monitor {
 
 		@SuppressWarnings("unchecked")
 		public void run() {
-			DbWriter writer = new DbWriter(this.conn);
+			DbAccessor writer = new DbAccessor(this.conn);
 
 			while (!isStop()) {
 				while (!objects.isEmpty() && !isStop()) {
@@ -285,10 +285,20 @@ public class Monitor {
 		this.properties = new Properties();
 		try {
 			this.properties.load(inStream);
+			
+			// 启动入库线程
+			// Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(this.properties.getProperty("database.driver"));
+
+			String connString = this.properties.getProperty("database.connectString");
+			String user = this.properties.getProperty("database.username");
+			String pwd = this.properties.getProperty("database.password");
+			Connection conn = DriverManager.getConnection(connString, user, pwd);
+			
+			List<Node> nodes = DbAccessor.getAllNodes(conn);  
 
 			// 获取http连接池树
 			int per = Integer.parseInt(this.properties.getProperty("queryNodeOfPerThread"));
-			List<Node> nodes = new ArrayList<Node>();
 			int poolSize = nodes.size() / per + ((nodes.size() % per != 0) ? 1 : 0);
 
 			// 启动http数据抓取线程
@@ -324,17 +334,10 @@ public class Monitor {
 			// Class.forName("com.mysql.jdbc.Driver");
 			Class.forName(this.properties.getProperty("database.driver"));
 
-			String connString = this.properties.getProperty("database.connectString");
-			String u = this.properties.getProperty("database.username");
-			String p = this.properties.getProperty("database.password");
-
 			this.executorService3 = Executors.newFixedThreadPool(poolSize);
 			for (i = 0; i < poolSize; i++) {
 				// 数据库连接池由JDBC管理。
-				// this.conn =
-				// DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:orc8i",
-				// "java", "88888888");
-				Connection conn = DriverManager.getConnection(connString, u, p);
+				conn = DriverManager.getConnection(connString, user, pwd);
 				conn.setAutoCommit(true);
 
 				Storage s = new Storage(conn, dbQueue);
