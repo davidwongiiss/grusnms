@@ -55,30 +55,36 @@ public class DbAccessor {
 			}
 
 			sqls[1] = "INSERT INTO grusnms.gbe_day_values(numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,"
-					+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+					+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 			for (int m = 0; m < 2; m++) {
 				try {
 					pstmt = conn.prepareStatement(sqls[m]);
 					int i = 0;
-					pstmt.setString(++i, gbe.getNodeId());
-					pstmt.setInt(++i, gbe.getNumberOfServices1());
-					pstmt.setInt(++i, gbe.getNumberOfServices2());
-					pstmt.setInt(++i, gbe.getNumberOfServices3());
-					pstmt.setInt(++i, gbe.getNumberOfServices4());
-					pstmt.setInt(++i, gbe.getNumberOfServices5());
-					pstmt.setInt(++i, gbe.getNumberOfServices6());
-					pstmt.setInt(++i, gbe.getNumberOfServices7());
-					pstmt.setInt(++i, gbe.getNumberOfServices8());
-					pstmt.setInt(++i, gbe.getMulticastBitrate1());
-					pstmt.setInt(++i, gbe.getMulticastBitrate2());
-					pstmt.setInt(++i, gbe.getMulticastBitrate3());
-					pstmt.setInt(++i, gbe.getMulticastBitrate4());
-					pstmt.setInt(++i, gbe.getMulticastBitrate5());
-					pstmt.setInt(++i, gbe.getMulticastBitrate6());
-					pstmt.setInt(++i, gbe.getMulticastBitrate7());
-					pstmt.setInt(++i, gbe.getMulticastBitrate8());
+					pstmt.setLong(++i, gbe.getNumberOfServices1());
+					pstmt.setLong(++i, gbe.getNumberOfServices2());
+					pstmt.setLong(++i, gbe.getNumberOfServices3());
+					pstmt.setLong(++i, gbe.getNumberOfServices4());
+					pstmt.setLong(++i, gbe.getNumberOfServices5());
+					pstmt.setLong(++i, gbe.getNumberOfServices6());
+					pstmt.setLong(++i, gbe.getNumberOfServices7());
+					pstmt.setLong(++i, gbe.getNumberOfServices8());
+					pstmt.setLong(++i, gbe.getMulticastBitrate1());
+					pstmt.setLong(++i, gbe.getMulticastBitrate2());
+					pstmt.setLong(++i, gbe.getMulticastBitrate3());
+					pstmt.setLong(++i, gbe.getMulticastBitrate4());
+					pstmt.setLong(++i, gbe.getMulticastBitrate5());
+					pstmt.setLong(++i, gbe.getMulticastBitrate6());
+					pstmt.setLong(++i, gbe.getMulticastBitrate7());
+					pstmt.setLong(++i, gbe.getMulticastBitrate8());
 					pstmt.setTimestamp(++i, gbe.getCreateTime());
+					pstmt.setString(++i, gbe.getNodeId());
+					
+					if (m == 1) {
+						String id = "";
+						pstmt.setString(++i, id);
+					}
+					
 					pstmt.executeUpdate();
 				}
 				catch (SQLException e) {
@@ -140,7 +146,7 @@ public class DbAccessor {
 					sqls[0] = "UPDATE grusnms.qam_cur_values SET qam1=?,qam2=?,qam3=?,qam4=?,qam5=?,qam6=?,qam7=?,qam8=?,qam9=?,qam10=?,qam11=?,qam12=?,qam13=?,qam14=?,qam15=?,qam16=?,"
 							+ " bitrate1=?,bitrate2=?,bitrate3=?,bitrate4=?,bitrate5=?,bitrate6=?,bitrate7=?,bitrate8=?,bitrate9=?,bitrate10=?,bitrate11=?,bitrate12=?,bitrate13=?,bitrate14=?,bitrate15=?,bitrate16=?,"
 							+ " numofservices1=?,numofservices2=?,numofservices3=?,numofservices4=?,numofservices5=?,numofservices6=?,numofservices7=?,numofservices8=?,numofservices9=?,numofservices10=?,numofservices11=?,"
-							+ " numofservices12=?,numofservices13=?,numofservices14=?,numofservices15=?,numofservices16=?,create_time=? WHERE node_id = ? ";
+							+ " numofservices12=?,numofservices13=?,numofservices14=?,numofservices15=?,numofservices16=?,create_time=?,blade=? WHERE node_id = ? ";
 				}
 				else {
 					sqls[0] = "INSERT INTO grusnms.qam_cur_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
@@ -152,65 +158,70 @@ public class DbAccessor {
 				sqls[1] = "INSERT INTO grusnms.qam_day_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
 						+ " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16,"
 						+ " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11,"
-						+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+						+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 				for (int m = 0; m < 2; m++) {
 					try {
 						int i = 0;
 						pstmt = conn.prepareStatement(sql);
-						pstmt.setInt(++i, qam.getQam1());
-						pstmt.setInt(++i, qam.getQam2());
-						pstmt.setInt(++i, qam.getQam3());
-						pstmt.setInt(++i, qam.getQam4());
-						pstmt.setInt(++i, qam.getQam5());
-						pstmt.setInt(++i, qam.getQam6());
-						pstmt.setInt(++i, qam.getQam7());
-						pstmt.setInt(++i, qam.getQam8());
-						pstmt.setInt(++i, qam.getQam9());
-						pstmt.setInt(++i, qam.getQam10());
-						pstmt.setInt(++i, qam.getQam11());
-						pstmt.setInt(++i, qam.getQam12());
-						pstmt.setInt(++i, qam.getQam13());
-						pstmt.setInt(++i, qam.getQam14());
-						pstmt.setInt(++i, qam.getQam15());
-						pstmt.setInt(++i, qam.getQam16());
+						pstmt.setBoolean(++i, qam.getQam1());
+						pstmt.setBoolean(++i, qam.getQam2());
+						pstmt.setBoolean(++i, qam.getQam3());
+						pstmt.setBoolean(++i, qam.getQam4());
+						pstmt.setBoolean(++i, qam.getQam5());
+						pstmt.setBoolean(++i, qam.getQam6());
+						pstmt.setBoolean(++i, qam.getQam7());
+						pstmt.setBoolean(++i, qam.getQam8());
+						pstmt.setBoolean(++i, qam.getQam9());
+						pstmt.setBoolean(++i, qam.getQam10());
+						pstmt.setBoolean(++i, qam.getQam11());
+						pstmt.setBoolean(++i, qam.getQam12());
+						pstmt.setBoolean(++i, qam.getQam13());
+						pstmt.setBoolean(++i, qam.getQam14());
+						pstmt.setBoolean(++i, qam.getQam15());
+						pstmt.setBoolean(++i, qam.getQam16());
 
-						pstmt.setInt(++i, qam.getBitrate1());
-						pstmt.setInt(++i, qam.getBitrate2());
-						pstmt.setInt(++i, qam.getBitrate3());
-						pstmt.setInt(++i, qam.getBitrate4());
-						pstmt.setInt(++i, qam.getBitrate5());
-						pstmt.setInt(++i, qam.getBitrate6());
-						pstmt.setInt(++i, qam.getBitrate7());
-						pstmt.setInt(++i, qam.getBitrate8());
-						pstmt.setInt(++i, qam.getBitrate9());
-						pstmt.setInt(++i, qam.getBitrate10());
-						pstmt.setInt(++i, qam.getBitrate11());
-						pstmt.setInt(++i, qam.getBitrate12());
-						pstmt.setInt(++i, qam.getBitrate13());
-						pstmt.setInt(++i, qam.getBitrate14());
-						pstmt.setInt(++i, qam.getBitrate15());
-						pstmt.setInt(++i, qam.getBitrate16());
+						pstmt.setLong(++i, qam.getBitrate1());
+						pstmt.setLong(++i, qam.getBitrate2());
+						pstmt.setLong(++i, qam.getBitrate3());
+						pstmt.setLong(++i, qam.getBitrate4());
+						pstmt.setLong(++i, qam.getBitrate5());
+						pstmt.setLong(++i, qam.getBitrate6());
+						pstmt.setLong(++i, qam.getBitrate7());
+						pstmt.setLong(++i, qam.getBitrate8());
+						pstmt.setLong(++i, qam.getBitrate9());
+						pstmt.setLong(++i, qam.getBitrate10());
+						pstmt.setLong(++i, qam.getBitrate11());
+						pstmt.setLong(++i, qam.getBitrate12());
+						pstmt.setLong(++i, qam.getBitrate13());
+						pstmt.setLong(++i, qam.getBitrate14());
+						pstmt.setLong(++i, qam.getBitrate15());
+						pstmt.setLong(++i, qam.getBitrate16());
 
-						pstmt.setInt(++i, qam.getNumOfServices1());
-						pstmt.setInt(++i, qam.getNumOfServices2());
-						pstmt.setInt(++i, qam.getNumOfServices3());
-						pstmt.setInt(++i, qam.getNumOfServices4());
-						pstmt.setInt(++i, qam.getNumOfServices5());
-						pstmt.setInt(++i, qam.getNumOfServices6());
-						pstmt.setInt(++i, qam.getNumOfServices7());
-						pstmt.setInt(++i, qam.getNumOfServices8());
-						pstmt.setInt(++i, qam.getNumOfServices9());
-						pstmt.setInt(++i, qam.getNumOfServices10());
-						pstmt.setInt(++i, qam.getNumOfServices11());
-						pstmt.setInt(++i, qam.getNumOfServices12());
-						pstmt.setInt(++i, qam.getNumOfServices13());
-						pstmt.setInt(++i, qam.getNumOfServices14());
-						pstmt.setInt(++i, qam.getNumOfServices15());
-						pstmt.setInt(++i, qam.getNumOfServices16());
+						pstmt.setLong(++i, qam.getNumOfServices1());
+						pstmt.setLong(++i, qam.getNumOfServices2());
+						pstmt.setLong(++i, qam.getNumOfServices3());
+						pstmt.setLong(++i, qam.getNumOfServices4());
+						pstmt.setLong(++i, qam.getNumOfServices5());
+						pstmt.setLong(++i, qam.getNumOfServices6());
+						pstmt.setLong(++i, qam.getNumOfServices7());
+						pstmt.setLong(++i, qam.getNumOfServices8());
+						pstmt.setLong(++i, qam.getNumOfServices9());
+						pstmt.setLong(++i, qam.getNumOfServices10());
+						pstmt.setLong(++i, qam.getNumOfServices11());
+						pstmt.setLong(++i, qam.getNumOfServices12());
+						pstmt.setLong(++i, qam.getNumOfServices13());
+						pstmt.setLong(++i, qam.getNumOfServices14());
+						pstmt.setLong(++i, qam.getNumOfServices15());
+						pstmt.setLong(++i, qam.getNumOfServices16());
 						pstmt.setTimestamp(++i, qam.getCreateTime());
 						pstmt.setInt(++i, qam.getBlade());
 						pstmt.setString(++i, qam.getNodeId());
+						
+						if (m == 1) {
+							String id = "";
+							pstmt.setString(++i, id);
+						}
 
 						pstmt.executeUpdate();
 					}
@@ -276,19 +287,24 @@ public class DbAccessor {
 
 					pstmt = conn.prepareStatement(sql);
 
-					sql = "INSERT INTO grusnms.node_event(seq_no,event_id,event_object,description,severity,create_time,handled,event_time,t_user,node_id) "
-							+ "VALUES(?,?,?,?,?,?,?,?,?,?) ";
+					sql = "INSERT INTO grusnms.node_event(id,seq_no,event_id,event_object,description,severity,create_time,handled,event_time,t_user,node_id) "
+							+ "VALUES(?,?,?,?,?,?,?,?,?,?,?) ";
 					pstmt = conn.prepareStatement(sql);
-					pstmt.setString(1, event.getSeqNo());
-					pstmt.setString(2, event.getEventId());
-					pstmt.setString(3, event.getEventObject());
-					pstmt.setString(4, event.getDescription());
-					pstmt.setString(5, event.getSeverity());
-					pstmt.setTimestamp(6, event.getCreateTime());
-					pstmt.setBoolean(7, event.isHandled());
-					pstmt.setTimestamp(8, event.getEventTime());
-					pstmt.setString(9, event.getUser());
-					pstmt.setString(10, event.getNodeId());
+					
+					int i = 0;
+					
+					String id = "";
+					pstmt.setString(++i, id);
+					pstmt.setString(++i, event.getSeqNo());
+					pstmt.setString(++i, event.getEventId());
+					pstmt.setString(++i, event.getEventObject());
+					pstmt.setString(++i, event.getDescription());
+					pstmt.setString(++i, event.getSeverity());
+					pstmt.setTimestamp(++i, event.getCreateTime());
+					pstmt.setBoolean(++i, event.isHandled());
+					pstmt.setTimestamp(++i, event.getEventTime());
+					pstmt.setString(++i, event.getUser());
+					pstmt.setString(++i, event.getNodeId());
 					pstmt.executeUpdate();
 				}
 				catch (SQLException e) {
@@ -327,7 +343,7 @@ public class DbAccessor {
 	 */
 	public static List<Node> getAllNodes(Connection conn) {
 		List<Node> list = new ArrayList<Node>();
-		String sql = "SELECT id, name,model,description,mac,ip, ipv6,create_time, update_time,creator,updater FROM grusbiz.nodes  ";
+		String sql = "SELECT id, ip, login_user, login_password FROM grusnms.nodes WHERE deleted != '1'";
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -336,17 +352,11 @@ public class DbAccessor {
 			Node node = null;
 			while (rs.next()) {
 				node = new Node();
-				node.setId(rs.getString(1));
-				node.setName(rs.getString(2));
-				node.setModel(rs.getString(3));
-				node.setDescriptioin(rs.getString(4));
-				node.setMac(rs.getString(5));
-				node.setIp(rs.getString(6));
-				node.setIpv6(rs.getString(7));
-				node.setCreateTime(rs.getDate(8));
-				node.setUpdateTime(rs.getDate(9));
-				node.setCreator(rs.getString(10));
-				node.setUpdater(rs.getString(11));
+				int i = 0;
+				node.setId(rs.getString(++i));
+				node.setIp(rs.getString(++i));
+				node.setLoginUser(rs.getString(++i));
+				node.setLoginPassword(rs.getString(++i));
 				list.add(node);
 			}
 		}

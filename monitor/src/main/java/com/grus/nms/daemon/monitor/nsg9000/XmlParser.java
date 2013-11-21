@@ -31,50 +31,50 @@ public class XmlParser {
 			if ("1".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate1(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices1(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate1(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices1(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("2".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate2(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices2(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate2(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices2(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("3".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate3(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices3(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate3(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices3(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("4".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate4(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices4(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate4(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices4(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("5".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate5(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices5(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate5(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices5(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("6".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate6(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices6(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate6(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices6(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("7".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate7(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices7(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate7(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices7(Long.parseLong(numOfServices.getNodeValue()));
 			}
 			else if ("8".equals(node.getNodeValue())) {
 				Node multicastBitrate = list.item(i).getAttributes().getNamedItem("MulticastBitrate");
 				Node numOfServices = list.item(i).getAttributes().getNamedItem("NumOfServices");
-				gbe.setMulticastBitrate8(Integer.parseInt(multicastBitrate.getNodeValue()));
-				gbe.setNumberOfServices8(Integer.parseInt(numOfServices.getNodeValue()));
+				gbe.setMulticastBitrate8(Long.parseLong(multicastBitrate.getNodeValue()));
+				gbe.setNumberOfServices8(Long.parseLong(numOfServices.getNodeValue()));
 			}
 		}
 
@@ -110,117 +110,117 @@ public class XmlParser {
 				NamedNodeMap map = list.item(i).getAttributes();
 
 				Node node = map.getNamedItem("TsId");
-				if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 1) {
+				if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 1) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam1(1);
-					qam.setBitrate1(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices1(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam1(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate1(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices1(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 2) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 2) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam2(2);
-					qam.setBitrate2(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices2(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam2(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate2(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices2(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 3) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 3) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam3(3);
-					qam.setBitrate3(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices3(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam3(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));;
+					qam.setBitrate3(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices3(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 4) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 4) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam4(4);
-					qam.setBitrate4(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices4(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam4(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate4(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices4(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 5) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 5) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam5(5);
-					qam.setBitrate5(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices5(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam5(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate5(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices5(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 6) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 6) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam6(6);
-					qam.setBitrate6(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices6(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam6(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate6(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices6(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 7) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 7) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam7(7);
-					qam.setBitrate7(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices7(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam7(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate7(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices7(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 8) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 8) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam8(8);
-					qam.setBitrate8(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices8(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam8(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate8(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices8(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 9) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 9) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam9(9);
-					qam.setBitrate9(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices9(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam9(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate9(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices9(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 10) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 10) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam10(10);
-					qam.setBitrate10(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices10(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam10(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate10(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices10(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 11) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 11) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam11(11);
-					qam.setBitrate11(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices11(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam11(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate11(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices11(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 12) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 12) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam12(12);
-					qam.setBitrate12(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices12(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam12(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate12(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices12(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 13) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 13) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam13(13);
-					qam.setBitrate13(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices13(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam13(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate13(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices13(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 14) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 14) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam14(14);
-					qam.setBitrate14(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices14(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam14(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate14(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices14(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 15) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 15) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam15(15);
-					qam.setBitrate15(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices15(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam15(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate15(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices15(Long.parseLong(numOfServices.getNodeValue()));
 				}
-				else if (Integer.parseInt(node.getNodeValue()) - ((blade - 1) * 16) == 16) {
+				else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 16) {
 					Node multicastBitrate = map.getNamedItem("Bitrate");
 					Node numOfServices = map.getNamedItem("NumOfServices");
-					qam.setQam16(16);
-					qam.setBitrate16(Integer.parseInt(multicastBitrate.getNodeValue()));
-					qam.setNumOfServices16(Integer.parseInt(numOfServices.getNodeValue()));
+					qam.setQam16(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+					qam.setBitrate16(Long.parseLong(multicastBitrate.getNodeValue()));
+					qam.setNumOfServices16(Long.parseLong(numOfServices.getNodeValue()));
 				}
 			}
 
