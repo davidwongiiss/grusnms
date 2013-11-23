@@ -10,11 +10,18 @@
 	<artifactId>discovery</artifactId>
    
 	<dependencies>
+		<!-- 
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>
 		</dependency>
+		 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.0.8</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.snmp4j</groupId>
 			<artifactId>snmp4j</artifactId>
@@ -22,10 +29,9 @@
 		</dependency>	
 		<!-- 	
 		<dependency>
-			<groupId>postgresqldriver</groupId>
-			<artifactId>postgresqldriver</artifactId>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/postgresql-9.2-1002.jdbc4.jar</systemPath>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>snmp4j-2.2.3</groupId>

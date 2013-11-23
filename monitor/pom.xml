@@ -13,20 +13,15 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>monitor</name>
 	<url>http://maven.apache.org</url>
-<!-- 	<properties> -->
-<!-- 		<project.build.sourceEncoding>GBK</project.build.sourceEncoding> -->
-<!-- 	</properties> -->
+	<!-- <properties> -->
+	<!-- <project.build.sourceEncoding>GBK</project.build.sourceEncoding> -->
+	<!-- </properties> -->
 	<dependencies>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.0-801.jdbc4</version>
-		</dependency>
 		<dependency>
 			<groupId>org.snmp4j</groupId>
 			<artifactId>snmp4j</artifactId>
 			<version>1.10.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -38,6 +33,10 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.3.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.0.8</version>
+		</dependency>
 	</dependencies>
 </project>

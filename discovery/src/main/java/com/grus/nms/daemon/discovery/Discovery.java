@@ -7,7 +7,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,11 +30,10 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 /**
- * 使用广播的方式发送snmp，获取NSG9000的设备信息，发现是NSG9000的设备，
- * 将设备入库或者按mac地址更新ip
+ * 使用广播的方式发送snmp，获取NSG9000的设备信息，发现是NSG9000的设备， 将设备入库或者按mac地址更新ip
  * 
  * @author davidwongiiss
- *
+ * 
  */
 public class Discovery {
 	// systemDescr
@@ -41,6 +42,11 @@ public class Discovery {
 	static final String OID2 = "1.3.6.1.2.1.2.2.1.2.2";
 	// MAC
 	static final String OID3 = "1.3.6.1.2.1.2.2.1.6.2";
+
+	private static java.sql.Timestamp getCurrentTimeStamp() {
+		java.util.Date today = new java.util.Date();
+		return new java.sql.Timestamp(today.getTime());
+	}
 
 	public class DeviceInfo {
 		public String system;
@@ -90,7 +96,8 @@ public class Discovery {
 		private void saveDb(DeviceInfo info) {
 			try {
 				PreparedStatement ps;
-				ps = this.conn.prepareStatement("SELECT COUNT(*) FROM grusbiz.nodes WHERE mac=?");
+				ps = this.conn
+						.prepareStatement("SELECT COUNT(*) FROM grusnms.nodes WHERE device_sn=?");
 
 				ps.setString(1, info.mac);
 				ResultSet rs = ps.executeQuery();
@@ -98,20 +105,42 @@ public class Discovery {
 				int count = rs.getInt(1);
 				if (count == 0) { // 插入
 					ps = this.conn
-							.prepareStatement("INSERT INTO grusbiz.nodes(name, mac, ip) VALUES(?, ?, ?)");
+							.prepareStatement("INSERT INTO grusnms.nodes(id, name, device_sn, ip, create_time, update_time, creator, updater, is_system, login_user,"
+									+ "login_password,deleted,description, device_type, device_model, longitude,latitude,ipv6) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 					int i = 0;
+					
+					UUID uuid  =  UUID.randomUUID(); 
+					String id = UUID.randomUUID().toString();
+					
+					ps.setString(++i, id);
 					ps.setString(++i, info.ip + "-NSG9000 6G");
 					ps.setString(++i, info.mac);
-					ps.setString(++i, info.ip);							
+					ps.setString(++i, info.ip);
+
+					Date now = new Date();
+					ps.setTimestamp(++i, Discovery.getCurrentTimeStamp());
+					ps.setTimestamp(++i, Discovery.getCurrentTimeStamp());
+					ps.setString(++i, "system");
+					ps.setString(++i, "system");
+					ps.setBoolean(++i, false);
+					ps.setString(++i, "admin");
+					ps.setString(++i, "nsgadmin");
+					ps.setBoolean(++i, false);
+					ps.setString(++i, "");
+					ps.setString(++i, "IPQAM");
+					ps.setString(++i, "NSG9000-6G");
+					ps.setInt(++i, 0);
+					ps.setInt(++i, 0);
+					ps.setString(++i, "");
 				}
 				else { // 新建
 					ps = this.conn
-							.prepareStatement("UPDATE grusbiz.nodes SET ip=? WHERE mac=?");
+							.prepareStatement("UPDATE grusnms.nodes SET ip=? WHERE device_sn=?");
 					int i = 0;
 					ps.setString(++i, info.ip);
 					ps.setString(++i, info.mac);
 				}
-		
+
 				ps.executeUpdate();
 			}
 			catch (SQLException e) {
@@ -202,8 +231,7 @@ public class Discovery {
 						VariableBinding vb = vs.elementAt(0);
 						Variable v = vb.getVariable();
 						String sysDesc = v.toString();
-						if (sysDesc.contains("Harmonic Inc")
-								&& sysDesc.contains("EQAM")
+						if (sysDesc.contains("Harmonic Inc") && sysDesc.contains("EQAM")
 								&& sysDesc.contains("9000")) {
 							DeviceInfo info = new DeviceInfo();
 							info.system = sysDesc;
@@ -228,8 +256,8 @@ public class Discovery {
 							}
 						}
 
-						System.out.println("Received response " + response
-								+ " on request " + request);
+						System.out.println("Received response " + response + " on request "
+								+ request);
 					}
 				}
 			};
@@ -257,17 +285,17 @@ public class Discovery {
 	private Thread thread2 = null;
 	private Connection conn = null;
 	private Properties props = null;
-	
+
 	public Discovery(Properties props) {
-		this.props = props;		
+		this.props = props;
 	}
 
 	public void start() {
 		BlockingQueue<DeviceInfo> devices = new LinkedBlockingQueue<DeviceInfo>();
 		this.p = new Producer(devices);
-		
+
 		try {
-			//Class.forName("com.mysql.jdbc.Driver");
+			// Class.forName("com.mysql.jdbc.Driver");
 			Class.forName(props.getProperty("database.driver"));
 		}
 		catch (ClassNotFoundException e1) {
@@ -278,8 +306,10 @@ public class Discovery {
 			String connString = props.getProperty("database.connectString");
 			String u = props.getProperty("database.username");
 			String p = props.getProperty("database.password");
-			
-			//this.conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:orc8i", "java", "88888888");
+
+			// this.conn =
+			// DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:orc8i",
+			// "java", "88888888");
 			this.conn = DriverManager.getConnection(connString, u, p);
 			this.conn.setAutoCommit(true);
 		}
@@ -287,7 +317,7 @@ public class Discovery {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		this.c = new Consumer(devices, this.conn);
 
 		this.thread1 = new Thread(this.p);
@@ -322,7 +352,7 @@ public class Discovery {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (this.conn != null) {
 			try {
 				this.conn.close();
@@ -335,12 +365,13 @@ public class Discovery {
 
 		return;
 	}
-	
+
 	public static void main(String args[]) {
 		InputStream inStream = null;
-		
-		inStream = Discovery.class.getClassLoader().getResourceAsStream("conf/daemon.discovery.properties");
-		
+
+		inStream = Discovery.class.getClassLoader().getResourceAsStream(
+				"conf/deamon.discovery.properties");
+
 		Properties props = new Properties();
 		try {
 			props.load(inStream);
@@ -350,9 +381,9 @@ public class Discovery {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		Discovery d = new Discovery(props);
-		
+
 		if (args.length == 0) {
 			d.stop();
 			d.start();
@@ -375,4 +406,3 @@ public class Discovery {
 		}
 	}
 }
-
