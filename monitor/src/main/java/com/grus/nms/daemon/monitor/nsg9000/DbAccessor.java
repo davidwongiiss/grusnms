@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.grus.nms.daemon.monitor.nsg9000.pojo.EventValue;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.GbeValue;
@@ -13,6 +14,11 @@ import com.grus.nms.daemon.monitor.nsg9000.pojo.Node;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.QamValue;
 
 public class DbAccessor {
+	private static java.sql.Timestamp getCurrentTimeStamp() {
+		java.util.Date today = new java.util.Date();
+		return new java.sql.Timestamp(today.getTime());
+	}
+	
 	private Connection conn;
 
 	public DbAccessor(Connection conn) {
@@ -45,16 +51,16 @@ public class DbAccessor {
 			boolean exists = rs.next();
 			String sqls[] = { "", "" };
 			if (exists) {
-				sqls[0] = "UPDATE grusnms.gbe_cur_values SET numofservices1=?,numofservices2=?,numofservices3=?,numofservices4=?,numofservices5=?,numofservices6=?,numofservices7=?,numofservices8=?,"
+				sqls[0] = "UPDATE grusnms.gbe_cur_values SET numberofservices1=?,numberofservices2=?,numberofservices3=?,numberofservices4=?,numberofservices5=?,numberofservices6=?,numberofservices7=?,numberofservices8=?,"
 						+ " multicastbitrate1=?,multicastbitrate2=?,multicastbitrate3=?,multicastbitrate4=?,multicastbitrate5=?,multicastbitrate6=?,multicastbitrate7=?,multicastbitrate8=?,create_time=?"
 						+ " WHERE node_id = ? ";
 			}
 			else {
-				sqls[0] = "INSERT INTO grusnms.gbe_cur_values(numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,"
+				sqls[0] = "INSERT INTO grusnms.gbe_cur_values(numberofservices1,numberofservices2,numberofservices3,numberofservices4,numberofservices5,numberofservices6,numberofservices7,numberofservices8,"
 						+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 			}
 
-			sqls[1] = "INSERT INTO grusnms.gbe_day_values(numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,"
+			sqls[1] = "INSERT INTO grusnms.gbe_day_values(numberofservices1,numberofservices2,numberofservices3,numberofservices4,numberofservices5,numberofservices6,numberofservices7,numberofservices8,"
 					+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 			for (int m = 0; m < 2; m++) {
@@ -77,11 +83,14 @@ public class DbAccessor {
 					pstmt.setLong(++i, gbe.getMulticastBitrate6());
 					pstmt.setLong(++i, gbe.getMulticastBitrate7());
 					pstmt.setLong(++i, gbe.getMulticastBitrate8());
+					
+					gbe.setCreateTime(DbAccessor.getCurrentTimeStamp());
 					pstmt.setTimestamp(++i, gbe.getCreateTime());
 					pstmt.setString(++i, gbe.getNodeId());
 					
 					if (m == 1) {
-						String id = "";
+						UUID uuid  =  UUID.randomUUID(); 
+						String id = UUID.randomUUID().toString();
 						pstmt.setString(++i, id);
 					}
 					
@@ -163,7 +172,7 @@ public class DbAccessor {
 				for (int m = 0; m < 2; m++) {
 					try {
 						int i = 0;
-						pstmt = conn.prepareStatement(sql);
+						pstmt = conn.prepareStatement(sqls[m]);
 						pstmt.setBoolean(++i, qam.getQam1());
 						pstmt.setBoolean(++i, qam.getQam2());
 						pstmt.setBoolean(++i, qam.getQam3());
@@ -214,12 +223,15 @@ public class DbAccessor {
 						pstmt.setLong(++i, qam.getNumOfServices14());
 						pstmt.setLong(++i, qam.getNumOfServices15());
 						pstmt.setLong(++i, qam.getNumOfServices16());
+						
+						qam.setCreateTime(DbAccessor.getCurrentTimeStamp());						
 						pstmt.setTimestamp(++i, qam.getCreateTime());
 						pstmt.setInt(++i, qam.getBlade());
 						pstmt.setString(++i, qam.getNodeId());
 						
 						if (m == 1) {
-							String id = "";
+							UUID uuid  =  UUID.randomUUID(); 
+							String id = UUID.randomUUID().toString();
 							pstmt.setString(++i, id);
 						}
 
@@ -275,7 +287,7 @@ public class DbAccessor {
 
 			for (EventValue event : events) {
 				try {
-					String sql = "SELECT id FROM grusnms.node_event WHERE node_id = ? AND seq_no = ? AND event_object = ? ";
+					String sql = "SELECT id FROM grusnms.node_events WHERE node_id = ? AND seq_no = ? AND event_object = ? ";
 					PreparedStatement pstmt = this.conn.prepareStatement(sql);
 					pstmt.setString(1, event.getNodeId());
 					pstmt.setString(2, event.getSeqNo());
@@ -287,19 +299,23 @@ public class DbAccessor {
 
 					pstmt = conn.prepareStatement(sql);
 
-					sql = "INSERT INTO grusnms.node_event(id,seq_no,event_id,event_object,description,severity,create_time,handled,event_time,t_user,node_id) "
-							+ "VALUES(?,?,?,?,?,?,?,?,?,?,?) ";
+					sql = "INSERT INTO grusnms.node_events(id,seq_no,event_id,event_object,Phys_Idx,description,severity,create_time,handled,event_time,user,node_id) "
+							+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?) ";
 					pstmt = conn.prepareStatement(sql);
 					
 					int i = 0;
 					
-					String id = "";
+					UUID uuid  =  UUID.randomUUID(); 
+					String id = UUID.randomUUID().toString();
 					pstmt.setString(++i, id);
 					pstmt.setString(++i, event.getSeqNo());
 					pstmt.setString(++i, event.getEventId());
 					pstmt.setString(++i, event.getEventObject());
+					pstmt.setString(++i, event.getPhysIdx());
 					pstmt.setString(++i, event.getDescription());
 					pstmt.setString(++i, event.getSeverity());
+					
+					event.setCreateTime(DbAccessor.getCurrentTimeStamp());	
 					pstmt.setTimestamp(++i, event.getCreateTime());
 					pstmt.setBoolean(++i, event.isHandled());
 					pstmt.setTimestamp(++i, event.getEventTime());
@@ -343,7 +359,7 @@ public class DbAccessor {
 	 */
 	public static List<Node> getAllNodes(Connection conn) {
 		List<Node> list = new ArrayList<Node>();
-		String sql = "SELECT id, ip, login_user, login_password FROM grusnms.nodes WHERE deleted != '1'";
+		String sql = "SELECT id, ip, login_user, login_password FROM grusnms.nodes WHERE deleted != 1";
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(sql);

@@ -22,8 +22,6 @@ public class QamValue {
 	private boolean qam14;
 	private boolean qam15;
 	private boolean qam16;
-	private boolean qam17;
-	private boolean qam18;
 
 	private Long bitrate1;
 	private Long bitrate2;
@@ -41,8 +39,7 @@ public class QamValue {
 	private Long bitrate14;
 	private Long bitrate15;
 	private Long bitrate16;
-	private Long bitrate17;
-	private Long bitrate18;
+
 
 	private Long numOfServices1;
 	private Long numOfServices2;
@@ -60,8 +57,6 @@ public class QamValue {
 	private Long numOfServices14;
 	private Long numOfServices15;
 	private Long numOfServices16;
-	private Long numOfServices17;
-	private Long numOfServices18;
 
 
 	private Timestamp createTime;
@@ -210,22 +205,6 @@ public class QamValue {
 		this.qam16 = qam16;
 	}
 
-	public boolean getQam17() {
-		return qam17;
-	}
-
-	public void setQam17(boolean qam17) {
-		this.qam17 = qam17;
-	}
-
-	public boolean getQam18() {
-		return qam18;
-	}
-
-	public void setQam18(boolean qam18) {
-		this.qam18 = qam18;
-	}
-
 	public Long getBitrate1() {
 		return bitrate1;
 	}
@@ -352,22 +331,6 @@ public class QamValue {
 
 	public void setBitrate16(Long bitrate16) {
 		this.bitrate16 = bitrate16;
-	}
-
-	public Long getBitrate17() {
-		return bitrate17;
-	}
-
-	public void setBitrate17(Long bitrate17) {
-		this.bitrate17 = bitrate17;
-	}
-
-	public Long getBitrate18() {
-		return bitrate18;
-	}
-
-	public void setBitrate18(Long bitrate18) {
-		this.bitrate18 = bitrate18;
 	}
 
 	public Long getNumOfServices1() {
@@ -497,23 +460,7 @@ public class QamValue {
 	public void setNumOfServices16(Long numOfServices16) {
 		this.numOfServices16 = numOfServices16;
 	}
-
-	public Long getNumOfServices17() {
-		return numOfServices17;
-	}
-
-	public void setNumOfServices17(Long numOfServices17) {
-		this.numOfServices17 = numOfServices17;
-	}
-
-	public Long getNumOfServices18() {
-		return numOfServices18;
-	}
-
-	public void setNumOfServices18(Long numOfServices18) {
-		this.numOfServices18 = numOfServices18;
-	}
-
+	
 	public Timestamp getCreateTime() {
 		return createTime;
 	}

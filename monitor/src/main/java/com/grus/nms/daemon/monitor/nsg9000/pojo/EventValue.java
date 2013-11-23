@@ -7,12 +7,13 @@ public class EventValue {
 	private String seqNo;
 	private String eventId;
 	private String eventObject;
+	private String physIdx;
 	private String description;
 	private String severity;
 	private Timestamp createTime;
 	private boolean handled;
 	private Timestamp eventTime;
-	private String user; //
+	private String user = "system"; //
 	private String nodeId;
 
 	public String getNodeId() {
@@ -101,5 +102,13 @@ public class EventValue {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+
+	public String getPhysIdx() {
+		return physIdx;
+	}
+
+	public void setPhysIdx(String physIdx) {
+		this.physIdx = physIdx;
 	}
 }

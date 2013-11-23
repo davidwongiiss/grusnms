@@ -80,6 +80,156 @@ public class XmlParser {
 
 		return gbe;
 	}
+	
+	/**
+	 * 避免1条
+	 * 
+	 * @param xmlContent
+	 * @param deviceNode
+	 * @param blade
+	 * @return
+	 * @throws Exception
+	 */
+	public static QamValue qamXmlParser1(String xmlContent, com.grus.nms.daemon.monitor.nsg9000.pojo.Node deviceNode)
+			throws Exception {
+
+		Document document = XmlManager.parse(new ByteArrayInputStream(xmlContent.getBytes()));
+
+		QamValue qam = new QamValue();
+		qam.setNodeId(deviceNode.getId());
+		
+		NodeList root = document.getElementsByTagName("BLADETRAFFIC");
+		if (root.getLength() == 0)
+			return null;
+		
+		Node bladeNode = root.item(0).getAttributes().getNamedItem("Blade");
+		int blade = Integer.parseInt(bladeNode.getNodeValue());
+		
+		qam.setBlade(blade);
+
+		NodeList list = document.getElementsByTagName("TsOut");
+		System.out.println(list.getLength());
+		for (int i = 0; i < list.getLength(); i++) {
+			NamedNodeMap map = list.item(i).getAttributes();
+
+			Node node = map.getNamedItem("TsId");
+			if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 1) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam1(true);//map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate1(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices1(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 2) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam2(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate2(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices2(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 3) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam3(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));;
+				qam.setBitrate3(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices3(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 4) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam4(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate4(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices4(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 5) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam5(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate5(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices5(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 6) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam6(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate6(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices6(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 7) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam7(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate7(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices7(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 8) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam8(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate8(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices8(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 9) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam9(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate9(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices9(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 10) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam10(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate10(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices10(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 11) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam11(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate11(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices11(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 12) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam12(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate12(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices12(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 13) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam13(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate13(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices13(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 14) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam14(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate14(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices14(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 15) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam15(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate15(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices15(Long.parseLong(numOfServices.getNodeValue()));
+			}
+			else if (Long.parseLong(node.getNodeValue()) - ((blade - 1) * 16) == 16) {
+				Node multicastBitrate = map.getNamedItem("Bitrate");
+				Node numOfServices = map.getNamedItem("NumOfServices");
+				qam.setQam16(true);//(map.getNamedItem("Enabled").getNodeValue().toString().equals("1"));
+				qam.setBitrate16(Long.parseLong(multicastBitrate.getNodeValue()));
+				qam.setNumOfServices16(Long.parseLong(numOfServices.getNodeValue()));
+			}
+		}
+
+		return qam;
+	}
+	
 
 	/**
 	 * 分析全部，避免重复解析
@@ -97,8 +247,8 @@ public class XmlParser {
 
 		Document document = XmlManager.parse(new ByteArrayInputStream(xmlContent.getBytes()));
 
-		// slot固定8
-		for (int n = 0; n < 8; n++) {
+		// slot固定9
+		for (int n = 0; n < 9; n++) {
 			QamValue qam = new QamValue();
 			qam.setNodeId(deviceNode.getId());
 			int blade = n;
@@ -241,21 +391,25 @@ public class XmlParser {
 			EventValue event = new EventValue();
 			String eventId = alarms.item(i).getAttributes().getNamedItem("Id").getNodeValue();
 			String eventObject = alarms.item(i).getAttributes().getNamedItem("Object").getNodeValue();
+			String physIdx = alarms.item(i).getAttributes().getNamedItem("PhysIdx").getNodeValue();
 			String description = alarms.item(i).getAttributes().getNamedItem("Description").getNodeValue();
 			String severity = alarms.item(i).getAttributes().getNamedItem("Severity").getNodeValue();
 			String eventTime = alarms.item(i).getAttributes().getNamedItem("Time").getNodeValue();
 			// 转换日期
-			Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(eventTime);
 			event.setSeqNo(seqNo);
 			event.setEventId(eventId);
 			event.setEventObject(eventObject);
+			event.setPhysIdx(physIdx);
 			event.setDescription(description);
 			event.setSeverity(severity);
+			
+			Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(eventTime);
 			event.setEventTime(new Timestamp(date.getTime()));
+			
 			event.setCreateTime(new Timestamp(new Date().getTime()));
 			event.setNodeId(n.getId());
 			// 此处有待调查
-			event.setUser("admin");
+			event.setUser("system");
 			event.setHandled(false);
 			events.add(event);
 		}

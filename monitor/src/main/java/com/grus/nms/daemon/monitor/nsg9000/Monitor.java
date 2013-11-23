@@ -66,9 +66,11 @@ public class Monitor {
 		private List<Node> nodes;
 		private boolean stop = false;
 
+		private Properties properties;
+
 		private BlockingQueue<ResponseQueueItem> xmls;
 
-		private int interval = 0;
+		private int interval = 5000;
 
 		/**
 		 * 分配结点，多开网络连接线程
@@ -76,6 +78,7 @@ public class Monitor {
 		 * @param nodes
 		 */
 		public DataPuller(List<Node> node, BlockingQueue<ResponseQueueItem> xmls) {
+			this.nodes = node;
 			this.xmls = xmls;
 		}
 
@@ -94,14 +97,33 @@ public class Monitor {
 					HttpConnection conn = HttpConnection.connect(node.getIp(), node.getLoginUser(), node.getLoginPassword());
 					try {
 						// 以后再有数据发送的话，提取为request对象链。
-						String xml = conn.getGbeData();
-						this.xmls.put(new ResponseQueueItem(node, Monitor.GBE, xml));
+						String xml = "";
 
-						xml = conn.getQamData();
-						this.xmls.put(new ResponseQueueItem(node, Monitor.QAM, xml));
+						if (Boolean.parseBoolean(getProperties().getProperty("pull.gbe.enabled", "true"))) {
+							xml = conn.getGbeData();
+							this.xmls.put(new ResponseQueueItem(node, Monitor.GBE, xml));
+							System.out.println(xml);
+						}
 
-						xml = conn.getEvents();
-						this.xmls.put(new ResponseQueueItem(node, Monitor.EVENT, xml));
+						// 发送0-9个slot
+						if (Boolean.parseBoolean(getProperties().getProperty("pull.qam.enabled", "true"))) {
+							for (int n = 0; n < 1; n++) {
+								try {
+									xml = conn.getQamData(n + 1);
+									this.xmls.put(new ResponseQueueItem(node, Monitor.QAM, xml));
+									System.out.println(xml);
+								}
+								catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+
+						if (Boolean.parseBoolean(getProperties().getProperty("pull.event.enabled", "true"))) {
+							xml = conn.getEvents();
+							this.xmls.put(new ResponseQueueItem(node, Monitor.EVENT, xml));
+							System.out.println(xml);
+						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -115,7 +137,8 @@ public class Monitor {
 				}
 
 				try {
-					Thread.sleep(this.getInterval());
+					int n = Integer.parseInt(getProperties().getProperty("pull.interval", "5000"));
+					Thread.sleep(n);
 				}
 				catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -138,6 +161,14 @@ public class Monitor {
 
 		public void setInterval(int interval) {
 			this.interval = interval;
+		}
+
+		public Properties getProperties() {
+			return properties;
+		}
+
+		public void setProperties(Properties properties) {
+			this.properties = properties;
 		}
 	}
 
@@ -175,7 +206,8 @@ public class Monitor {
 							object = XmlParser.gbeXmlParser(item.xml, item.node);
 						}
 						else if (item.type == Monitor.QAM) {
-							object = XmlParser.qamXmlParser(item.xml, item.node);
+							// object = XmlParser.qamXmlParser(item.xml, item.node);
+							object = XmlParser.qamXmlParser1(item.xml, item.node);
 						}
 						else if (item.type == Monitor.EVENT) {
 							object = XmlParser.eventXmlParser(item.xml, item.node);
@@ -238,7 +270,9 @@ public class Monitor {
 							writer.handleGbe((GbeValue) item.data);
 						}
 						else if (item.type == Monitor.QAM) {
-							writer.handleQam((List<QamValue>) item.data);
+							List<QamValue> qams = new ArrayList<QamValue>();
+							qams.add((QamValue) item.data);
+							writer.handleQam(qams);
 						}
 						else if (item.type == Monitor.EVENT) {
 							writer.handleEvent((List<EventValue>) item.data);
@@ -277,7 +311,7 @@ public class Monitor {
 
 	public void start() throws Exception {
 		InputStream inStream = null;
-		inStream = Monitor.class.getClassLoader().getResourceAsStream("conf/daemon.monitor.properties");
+		inStream = Monitor.class.getClassLoader().getResourceAsStream("conf/deamon.monitor.properties");
 		if (inStream == null) {
 			throw new Exception("dasdas");
 		}
@@ -285,7 +319,7 @@ public class Monitor {
 		this.properties = new Properties();
 		try {
 			this.properties.load(inStream);
-			
+
 			// 启动入库线程
 			// Class.forName("com.mysql.jdbc.Driver");
 			Class.forName(this.properties.getProperty("database.driver"));
@@ -294,11 +328,15 @@ public class Monitor {
 			String user = this.properties.getProperty("database.username");
 			String pwd = this.properties.getProperty("database.password");
 			Connection conn = DriverManager.getConnection(connString, user, pwd);
-			
-			List<Node> nodes = DbAccessor.getAllNodes(conn);  
+
+			List<Node> nodes = DbAccessor.getAllNodes(conn);
+			if (nodes.isEmpty()) {
+				System.out.println("未发现设备结点");
+				return;
+			}
 
 			// 获取http连接池树
-			int per = Integer.parseInt(this.properties.getProperty("queryNodeOfPerThread"));
+			int per = Integer.parseInt(this.properties.getProperty("pull.queryNodeOfPerThread"));
 			int poolSize = nodes.size() / per + ((nodes.size() % per != 0) ? 1 : 0);
 
 			// 启动http数据抓取线程
@@ -307,10 +345,11 @@ public class Monitor {
 
 			int i = 0;
 			while (i < nodes.size()) {
-				List<Node> sub = nodes.subList(i, i + per);
+				List<Node> sub = nodes.subList(i, Math.min(nodes.size(), i + per));
 				i += per;
 
 				DataPuller dp = new DataPuller(sub, xmlQueue);
+				dp.setProperties(properties);
 				this.dps.add(dp);
 				this.executorService1.execute(dp);
 			}
@@ -320,7 +359,7 @@ public class Monitor {
 			// 启动分析处理线程
 			LinkedBlockingQueue<DbQueueItem> dbQueue = new LinkedBlockingQueue<DbQueueItem>();
 
-			int cpuNums = Runtime.getRuntime().availableProcessors();
+			int cpuNums = 1;// Runtime.getRuntime().availableProcessors();
 			this.executorService2 = Executors.newFixedThreadPool(cpuNums);
 			for (i = 0; i < cpuNums; i++) {
 				Parser p = new Parser(xmlQueue, dbQueue);

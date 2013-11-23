@@ -246,8 +246,8 @@ public final class HttpConnection {
 		return this.send("<?xml version='1.0'?><NSG><IPINPCFG Action='GET'/></NSG>");
 	}
 
-	public String getQamData() {
-		return this.send("<?xml version='1.0'?><NSG><BLADETRAFFIC Action='GET'/></NSG>");
+	public String getQamData(int i) {
+		return this.send("<?xml version='1.0'?><NSG><BLADETRAFFIC Action='GET' Blade='" + i + "'/></NSG>");
 	}
 	
 	public String getEvents() {
