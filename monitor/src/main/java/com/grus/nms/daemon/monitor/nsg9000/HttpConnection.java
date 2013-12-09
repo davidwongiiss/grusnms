@@ -47,11 +47,12 @@ public final class HttpConnection {
 	 * @param password
 	 * @return
 	 */
-	public static HttpConnection connect(String ip, String user, String password) {
+	public static HttpConnection connect(String ip, String user, String password, int timeout) {
 		HttpConnection conn = new HttpConnection();
-		conn.createConnect(ip, user, password);
+		if (conn.createConnect(ip, user, password, timeout))
+			return conn;
 		
-		return conn;
+		return null;
 	}	
 
 	public String send(String data) {
@@ -117,7 +118,9 @@ public final class HttpConnection {
 		}
 	}
 
-	private void createConnect(String ip, String user, String password) {
+	private boolean createConnect(String ip, String user, String password, int timeout) {
+		boolean ok = false;
+		
 		this.connManager = new PoolingHttpClientConnectionManager();
 		this.connManager.setMaxTotal(2);
 
@@ -161,7 +164,7 @@ public final class HttpConnection {
 			// Request configuration can be overridden at the request level.
 			// They will take precedence over the one set at the client level.
 			RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
-					.setSocketTimeout(5000).setConnectTimeout(5000)
+					.setSocketTimeout(timeout).setConnectTimeout(timeout)
 					.setConnectionRequestTimeout(5000).build();
 			// httpget.setConfig(requestConfig);
 			httpPost.setConfig(requestConfig);
@@ -220,6 +223,8 @@ public final class HttpConnection {
 				}
 				
 				this.ip = ip;
+				
+				ok = true;
 			}
 			finally {
 				response.close();
@@ -235,11 +240,28 @@ public final class HttpConnection {
 		}
 		finally {
 		}
+		
+		return ok;
 	}
 
 	// 以后可以提取为request
 	public String getAllData() {
-		return this.send("<?xml version='1.0'?><NSG><IPINPCFG Action='GET'/></NSG><NSG><BLADETRAFFIC Action='GET'/></NSG><NSG><STATUS Action='GET'/></NSG>");
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version='1.0'?><NSG>");
+		sb.append("<IPINPCFG Action=\"GET\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"1\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"2\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"3\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"4\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"5\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"6\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"7\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"8\"/>");
+		sb.append("<BLADETRAFFIC Action=\"GET\" Blade=\"9\"/>");
+		sb.append("<STATUS Action='GET'/>");
+		sb.append("</NSG>");
+		
+		return this.send(sb.toString());
 	}
 	
 	public String getGbeData() {
@@ -259,7 +281,7 @@ public final class HttpConnection {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		HttpConnection conn = HttpConnection.connect("192.168.11.45", "admin", "nsgadmin");
+		HttpConnection conn = HttpConnection.connect("192.168.11.45", "admin", "nsgadmin", 1000);
 
 		String s = conn
 			//	.send("<?xml version='1.0'?><NSG><SLOTSCFG Action='GET'/></NSG>");

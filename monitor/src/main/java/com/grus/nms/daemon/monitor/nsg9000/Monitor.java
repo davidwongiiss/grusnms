@@ -1,11 +1,13 @@
 package com.grus.nms.daemon.monitor.nsg9000;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -13,10 +15,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.w3c.dom.Document;
+
 import com.grus.nms.daemon.monitor.nsg9000.pojo.EventValue;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.GbeValue;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.Node;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.NodeStatus;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.QamValue;
+import com.grus.nms.daemon.monitor.util.XmlManager;
 
 /**
  * 监视类
@@ -31,6 +37,7 @@ public class Monitor {
 	static final int GBE = 1;
 	static final int QAM = 2;
 	static final int EVENT = 3;
+	static final int STATUS = 4;
 
 	public class ResponseQueueItem {
 		public Node node;
@@ -69,6 +76,7 @@ public class Monitor {
 		private Properties properties;
 
 		private BlockingQueue<ResponseQueueItem> xmls;
+		private BlockingQueue<DbQueueItem> dbObjects;		
 
 		private int interval = 5000;
 
@@ -77,28 +85,64 @@ public class Monitor {
 		 * 
 		 * @param nodes
 		 */
-		public DataPuller(List<Node> node, BlockingQueue<ResponseQueueItem> xmls) {
+		public DataPuller(List<Node> node, BlockingQueue<ResponseQueueItem> xmls, BlockingQueue<DbQueueItem> dbObjects) {
 			this.nodes = node;
 			this.xmls = xmls;
+			this.dbObjects = dbObjects;
 		}
 
-		public DataPuller(Node node, BlockingQueue<ResponseQueueItem> xmls) {
+		public DataPuller(Node node, BlockingQueue<ResponseQueueItem> xmls, BlockingQueue<DbQueueItem> dbObjects) {
 			this.nodes = new ArrayList<Node>();
 			nodes.add(node);
 			this.xmls = xmls;
+			this.dbObjects = dbObjects;
 		}
-
+		
 		public void run() {
+			String ips = properties.getProperty("test.ips", "");
+			int interval = Integer.parseInt(getProperties().getProperty("pull.interval", "5000"));
+			int timeout = Integer.parseInt(getProperties().getProperty("pull.timeout", "5000"));
+			
 			while (!isStop()) {
 				for (int i = 0; i < this.nodes.size() && !isStop(); i++) {
 					Node node = nodes.get(i);
+					
+					if (!ips.isEmpty() && !ips.contains(node.getIp()))
+						continue;
 
+					NodeStatus ns = new NodeStatus();
+					ns.node_id = node.getId();
+					ns.ip = node.getIp();
+					ns.name = node.getName();
+					
 					// 连接池，以后http连接认证和session在这里进行管理
-					HttpConnection conn = HttpConnection.connect(node.getIp(), node.getLoginUser(), node.getLoginPassword());
+					HttpConnection conn = HttpConnection.connect(node.getIp(), node.getLoginUser(), node.getLoginPassword(), timeout);
+					if (conn == null) {
+						ns.status = 1;
+						try {
+							this.dbObjects.put(new DbQueueItem(Monitor.STATUS, ns));
+						}
+						catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						continue;
+					}
+					
+					ns.status = 0;
+					try {
+						this.dbObjects.put(new DbQueueItem(Monitor.STATUS, ns));
+					}
+					catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}					
+					
 					try {
 						// 以后再有数据发送的话，提取为request对象链。
 						String xml = "";
 
+						/*
 						if (Boolean.parseBoolean(getProperties().getProperty("pull.gbe.enabled", "true"))) {
 							xml = conn.getGbeData();
 							this.xmls.put(new ResponseQueueItem(node, Monitor.GBE, xml));
@@ -124,6 +168,12 @@ public class Monitor {
 							this.xmls.put(new ResponseQueueItem(node, Monitor.EVENT, xml));
 							System.out.println(xml);
 						}
+						*/
+						xml = conn.getAllData();
+						if (!xml.isEmpty()) {
+							System.out.println(xml);
+							this.xmls.put(new ResponseQueueItem(node, Monitor.ALL, xml));
+						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -137,8 +187,7 @@ public class Monitor {
 				}
 
 				try {
-					int n = Integer.parseInt(getProperties().getProperty("pull.interval", "5000"));
-					Thread.sleep(n);
+					Thread.sleep(interval);
 				}
 				catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -195,26 +244,49 @@ public class Monitor {
 
 		public void run() {
 			while (!isStop()) {
-				while (!xmls.isEmpty() && !isStop()) {
+				//while (!xmls.isEmpty() && !isStop()) {
 					ResponseQueueItem item;
 					try {
 						item = xmls.take();
+						Document document = XmlManager.parse(new ByteArrayInputStream(item.xml.getBytes()));
 
 						// 此处以后可以改为handlers职责链，可以参照java netty nio库的设计模式
 						Object object = null;
 						if (item.type == Monitor.GBE) {
-							object = XmlParser.gbeXmlParser(item.xml, item.node);
+							object = XmlParser.gbeXmlParser(document, item.node);
+							if (object != null)
+								this.objects.put(new DbQueueItem(item.type, object));
 						}
 						else if (item.type == Monitor.QAM) {
 							// object = XmlParser.qamXmlParser(item.xml, item.node);
-							object = XmlParser.qamXmlParser1(item.xml, item.node);
+							object = XmlParser.qamXmlParser1(document, item.node);
+							if (object != null)
+								this.objects.put(new DbQueueItem(item.type, object));
 						}
 						else if (item.type == Monitor.EVENT) {
-							object = XmlParser.eventXmlParser(item.xml, item.node);
+							object = XmlParser.eventXmlParser(document, item.node);
+							if (object != null)
+								this.objects.put(new DbQueueItem(item.type, object));
 						}
-
-						if (object != null)
-							this.objects.put(new DbQueueItem(item.type, object));
+						else if (item.type == Monitor.ALL) {
+							List<XmlParser.Result> objects = XmlParser.handleAll(document, item.node);
+							Iterator<XmlParser.Result> itr = objects.iterator();
+							while (itr.hasNext()) {
+								XmlParser.Result nextObj = itr.next();
+							   if (nextObj.type == XmlParser.Result.GBE) {
+							  	 this.objects.put(new DbQueueItem(Monitor.GBE, nextObj.object));
+							   }
+							   else if (nextObj.type == XmlParser.Result.QAM) {
+							  	 this.objects.put(new DbQueueItem(Monitor.QAM, nextObj.object));
+							   }
+							   else if (nextObj.type == XmlParser.Result.EVENT) {
+							  	 this.objects.put(new DbQueueItem(Monitor.EVENT, nextObj.object));
+							   }
+							   else {
+							  	 ;
+							   }							   
+							}							
+						}
 
 						Thread.yield();
 					}
@@ -226,7 +298,9 @@ public class Monitor {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
+				//}
+				
+				Thread.yield();
 			}
 		}
 
@@ -260,8 +334,8 @@ public class Monitor {
 		public void run() {
 			DbAccessor writer = new DbAccessor(this.conn);
 
-			while (!isStop()) {
-				while (!objects.isEmpty() && !isStop()) {
+			while (!isStop()) {	
+				//while (!objects.isEmpty() && !isStop()) {
 					DbQueueItem item;
 					try {
 						item = objects.take();
@@ -270,14 +344,17 @@ public class Monitor {
 							writer.handleGbe((GbeValue) item.data);
 						}
 						else if (item.type == Monitor.QAM) {
-							List<QamValue> qams = new ArrayList<QamValue>();
-							qams.add((QamValue) item.data);
-							writer.handleQam(qams);
+							//List<QamValue> qams = new ArrayList<QamValue>();
+							//qams.add((QamValue) item.data);
+							writer.handleQam((List<QamValue>)item.data);
 						}
 						else if (item.type == Monitor.EVENT) {
 							writer.handleEvent((List<EventValue>) item.data);
 						}
-
+						else if (item.type == Monitor.STATUS) {
+							writer.handleStatus((NodeStatus) item.data);
+						}
+						
 						Thread.yield();
 					}
 					catch (InterruptedException e) {
@@ -288,7 +365,9 @@ public class Monitor {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
+				//}
+				
+				Thread.yield();
 			}
 		}
 
@@ -302,9 +381,7 @@ public class Monitor {
 	}
 
 	private Properties properties;
-	private ExecutorService executorService1;
-	private ExecutorService executorService2;
-	private ExecutorService executorService3;
+	private ExecutorService executorService;
 	private List<DataPuller> dps = new ArrayList<DataPuller>();
 	private List<Parser> parsers = new ArrayList<Parser>();
 	private List<Storage> dbwriters = new ArrayList<Storage>();
@@ -336,55 +413,48 @@ public class Monitor {
 			}
 
 			// 获取http连接池树
-			int per = Integer.parseInt(this.properties.getProperty("pull.queryNodeOfPerThread"));
-			int poolSize = nodes.size() / per + ((nodes.size() % per != 0) ? 1 : 0);
+			int per = Integer.parseInt(this.properties.getProperty("pull.queryNodeOfPerThread", "100"));
+			int poolSize = nodes.size() / per + ((nodes.size() % per != 0) ? 1 : 0);			
+			int cpuNums = Integer.parseInt(this.properties.getProperty("pull.parser.count", "1")); //Runtime.getRuntime().availableProcessors();
+			int dbSize = Integer.parseInt(this.properties.getProperty("pull.dbaccessor.count", "2"));
+			
+			int tc = poolSize + cpuNums + dbSize;
+			this.executorService = Executors.newFixedThreadPool(tc);
 
-			// 启动http数据抓取线程
 			LinkedBlockingQueue<ResponseQueueItem> xmlQueue = new LinkedBlockingQueue<ResponseQueueItem>();
-			this.executorService1 = Executors.newFixedThreadPool(poolSize);
-
+			LinkedBlockingQueue<DbQueueItem> dbQueue = new LinkedBlockingQueue<DbQueueItem>();
+			
+			// 启动http数据抓取线程
 			int i = 0;
 			while (i < nodes.size()) {
 				List<Node> sub = nodes.subList(i, Math.min(nodes.size(), i + per));
 				i += per;
 
-				DataPuller dp = new DataPuller(sub, xmlQueue);
+				DataPuller dp = new DataPuller(sub, xmlQueue, dbQueue);
 				dp.setProperties(properties);
 				this.dps.add(dp);
-				this.executorService1.execute(dp);
+				this.executorService.execute(dp);
 			}
 
-			this.executorService1.shutdown();
-
 			// 启动分析处理线程
-			LinkedBlockingQueue<DbQueueItem> dbQueue = new LinkedBlockingQueue<DbQueueItem>();
-
-			int cpuNums = 1;// Runtime.getRuntime().availableProcessors();
-			this.executorService2 = Executors.newFixedThreadPool(cpuNums);
 			for (i = 0; i < cpuNums; i++) {
 				Parser p = new Parser(xmlQueue, dbQueue);
 				this.parsers.add(p);
-				this.executorService2.execute(p);
+				this.executorService.execute(p);
 			}
 
-			this.executorService2.shutdown();
-
 			// 启动入库线程
-			// Class.forName("com.mysql.jdbc.Driver");
-			Class.forName(this.properties.getProperty("database.driver"));
-
-			this.executorService3 = Executors.newFixedThreadPool(poolSize);
-			for (i = 0; i < poolSize; i++) {
+			for (i = 0; i < dbSize; i++) {
 				// 数据库连接池由JDBC管理。
 				conn = DriverManager.getConnection(connString, user, pwd);
 				conn.setAutoCommit(true);
 
 				Storage s = new Storage(conn, dbQueue);
 				this.dbwriters.add(s);
-				this.executorService3.execute(s);
+				this.executorService.execute(s);
 			}
 
-			this.executorService3.shutdown();
+			this.executorService.shutdown();
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -416,14 +486,8 @@ public class Monitor {
 		}
 
 		// 等待结束
-		if (this.executorService1 != null)
-			this.executorService1.isTerminated();
-
-		if (this.executorService2 != null)
-			this.executorService2.isTerminated();
-
-		if (this.executorService3 != null)
-			this.executorService3.isTerminated();
+		if (this.executorService != null)
+			this.executorService.isTerminated();
 	}
 
 	/**

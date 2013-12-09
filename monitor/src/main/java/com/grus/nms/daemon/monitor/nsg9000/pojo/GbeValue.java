@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 public class GbeValue {
 	private String nodeId;
+	private String ip;
+	
 	private Long numberOfServices1;
 	private Long numberOfServices2;
 	private Long numberOfServices3;
@@ -166,5 +168,13 @@ public class GbeValue {
 
 	public void setMulticastBitrate8(Long multicastBitrate8) {
 		this.multicastBitrate8 = multicastBitrate8;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 }

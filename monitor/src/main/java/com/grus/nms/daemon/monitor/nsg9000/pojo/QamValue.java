@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 public class QamValue {
 	private String nodeId;
+	private String ip;
 	private Integer blade;
 	
 	private boolean qam1;
@@ -467,5 +468,13 @@ public class QamValue {
 
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 }

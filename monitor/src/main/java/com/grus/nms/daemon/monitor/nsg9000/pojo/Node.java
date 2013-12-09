@@ -3,6 +3,7 @@ package com.grus.nms.daemon.monitor.nsg9000.pojo;
 public class Node {
 	private String id;
 	private String ip;
+	private String name;
 	private String loginUser;
 	private String loginPassword;
 
@@ -36,5 +37,13 @@ public class Node {
 
 	public void setLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.EventValue;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.GbeValue;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.Node;
+import com.grus.nms.daemon.monitor.nsg9000.pojo.NodeStatus;
 import com.grus.nms.daemon.monitor.nsg9000.pojo.QamValue;
 
 public class DbAccessor {
@@ -41,7 +42,7 @@ public class DbAccessor {
 		}
 
 		try {
-			this.conn.setAutoCommit(false);
+			this.conn.setAutoCommit(true);
 
 			String sql = "SELECT node_id FROM grusnms.gbe_cur_values WHERE node_id = ? ";
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -52,16 +53,16 @@ public class DbAccessor {
 			String sqls[] = { "", "" };
 			if (exists) {
 				sqls[0] = "UPDATE grusnms.gbe_cur_values SET numberofservices1=?,numberofservices2=?,numberofservices3=?,numberofservices4=?,numberofservices5=?,numberofservices6=?,numberofservices7=?,numberofservices8=?,"
-						+ " multicastbitrate1=?,multicastbitrate2=?,multicastbitrate3=?,multicastbitrate4=?,multicastbitrate5=?,multicastbitrate6=?,multicastbitrate7=?,multicastbitrate8=?,create_time=?"
+						+ " multicastbitrate1=?,multicastbitrate2=?,multicastbitrate3=?,multicastbitrate4=?,multicastbitrate5=?,multicastbitrate6=?,multicastbitrate7=?,multicastbitrate8=?,create_time=?,ip=?"
 						+ " WHERE node_id = ? ";
 			}
 			else {
 				sqls[0] = "INSERT INTO grusnms.gbe_cur_values(numberofservices1,numberofservices2,numberofservices3,numberofservices4,numberofservices5,numberofservices6,numberofservices7,numberofservices8,"
-						+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+						+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,ip,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 			}
 
-			sqls[1] = "INSERT INTO grusnms.gbe_day_values(numberofservices1,numberofservices2,numberofservices3,numberofservices4,numberofservices5,numberofservices6,numberofservices7,numberofservices8,"
-					+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+			sqls[1] = "INSERT INTO grusnms.gbe_cur_day_values(numberofservices1,numberofservices2,numberofservices3,numberofservices4,numberofservices5,numberofservices6,numberofservices7,numberofservices8,"
+					+ " multicastbitrate1,multicastbitrate2,multicastbitrate3,multicastbitrate4,multicastbitrate5,multicastbitrate6,multicastbitrate7,multicastbitrate8,create_time,ip,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			for (int m = 0; m < 2; m++) {
 				try {
@@ -86,6 +87,7 @@ public class DbAccessor {
 					
 					gbe.setCreateTime(DbAccessor.getCurrentTimeStamp());
 					pstmt.setTimestamp(++i, gbe.getCreateTime());
+					pstmt.setString(++i, gbe.getIp());					
 					pstmt.setString(++i, gbe.getNodeId());
 					
 					if (m == 1) {
@@ -101,7 +103,7 @@ public class DbAccessor {
 				}
 			}
 
-			this.conn.commit();
+			//this.conn.commit();
 		}
 		catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -141,7 +143,7 @@ public class DbAccessor {
 		}
 
 		try {
-			this.conn.setAutoCommit(false);
+			this.conn.setAutoCommit(true);
 
 			for (QamValue qam : vals) {
 				String sql = "SELECT node_id FROM grusnms.qam_cur_values WHERE node_id = ? ";
@@ -155,19 +157,19 @@ public class DbAccessor {
 					sqls[0] = "UPDATE grusnms.qam_cur_values SET qam1=?,qam2=?,qam3=?,qam4=?,qam5=?,qam6=?,qam7=?,qam8=?,qam9=?,qam10=?,qam11=?,qam12=?,qam13=?,qam14=?,qam15=?,qam16=?,"
 							+ " bitrate1=?,bitrate2=?,bitrate3=?,bitrate4=?,bitrate5=?,bitrate6=?,bitrate7=?,bitrate8=?,bitrate9=?,bitrate10=?,bitrate11=?,bitrate12=?,bitrate13=?,bitrate14=?,bitrate15=?,bitrate16=?,"
 							+ " numofservices1=?,numofservices2=?,numofservices3=?,numofservices4=?,numofservices5=?,numofservices6=?,numofservices7=?,numofservices8=?,numofservices9=?,numofservices10=?,numofservices11=?,"
-							+ " numofservices12=?,numofservices13=?,numofservices14=?,numofservices15=?,numofservices16=?,create_time=?,blade=? WHERE node_id = ? ";
+							+ " numofservices12=?,numofservices13=?,numofservices14=?,numofservices15=?,numofservices16=?,create_time=?,blade=?,ip=? WHERE node_id = ? ";
 				}
 				else {
 					sqls[0] = "INSERT INTO grusnms.qam_cur_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
 							+ " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16,"
 							+ " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11,"
-							+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+							+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,ip,node_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 				}
 
-				sqls[1] = "INSERT INTO grusnms.qam_day_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
+				sqls[1] = "INSERT INTO grusnms.qam_cur_day_values(qam1,qam2,qam3,qam4,qam5,qam6,qam7,qam8,qam9,qam10,qam11,qam12,qam13,qam14,qam15,qam16,"
 						+ " bitrate1,bitrate2,bitrate3,bitrate4,bitrate5,bitrate6,bitrate7,bitrate8,bitrate9,bitrate10,bitrate11,bitrate12,bitrate13,bitrate14,bitrate15,bitrate16,"
 						+ " numofservices1,numofservices2,numofservices3,numofservices4,numofservices5,numofservices6,numofservices7,numofservices8,numofservices9,numofservices10,numofservices11,"
-						+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+						+ " numofservices12,numofservices13,numofservices14,numofservices15,numofservices16,create_time,blade,ip,node_id,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 				for (int m = 0; m < 2; m++) {
 					try {
@@ -227,6 +229,7 @@ public class DbAccessor {
 						qam.setCreateTime(DbAccessor.getCurrentTimeStamp());						
 						pstmt.setTimestamp(++i, qam.getCreateTime());
 						pstmt.setInt(++i, qam.getBlade());
+						pstmt.setString(++i, qam.getIp());						
 						pstmt.setString(++i, qam.getNodeId());
 						
 						if (m == 1) {
@@ -243,7 +246,7 @@ public class DbAccessor {
 				}
 			}
 
-			this.conn.commit();
+			//this.conn.commit();
 		}
 		catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -283,7 +286,7 @@ public class DbAccessor {
 		}
 
 		try {
-			this.conn.setAutoCommit(false);
+			this.conn.setAutoCommit(true);
 
 			for (EventValue event : events) {
 				try {
@@ -328,7 +331,7 @@ public class DbAccessor {
 				}
 			}
 
-			this.conn.commit();
+			//this.conn.commit();
 		}
 		catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -359,7 +362,7 @@ public class DbAccessor {
 	 */
 	public static List<Node> getAllNodes(Connection conn) {
 		List<Node> list = new ArrayList<Node>();
-		String sql = "SELECT id, ip, login_user, login_password FROM grusnms.nodes WHERE deleted != 1";
+		String sql = "SELECT id, ip, name, login_user, login_password FROM grusnms.nodes WHERE deleted != 1";
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -371,6 +374,7 @@ public class DbAccessor {
 				int i = 0;
 				node.setId(rs.getString(++i));
 				node.setIp(rs.getString(++i));
+				node.setName(rs.getString(++i));
 				node.setLoginUser(rs.getString(++i));
 				node.setLoginPassword(rs.getString(++i));
 				list.add(node);
@@ -383,4 +387,33 @@ public class DbAccessor {
 		
 		return list;
 	}
+
+	public void handleStatus(NodeStatus data) {
+		String sql = "insert into grusnms.node_status values(?,?,?,?,?,?,?,?,?,?,?) on duplicate key UPDATE status=?, create_time=?";
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			int i = 0;
+			pstmt.setString(++i, data.node_id);
+			pstmt.setString(++i, data.ip);
+			pstmt.setString(++i, data.name);
+			pstmt.setInt(++i, data.status);
+			pstmt.setInt(++i, 0);
+			pstmt.setInt(++i, 0);
+			pstmt.setInt(++i, 0);
+			pstmt.setInt(++i, 0);
+			pstmt.setInt(++i, 0);
+			pstmt.setInt(++i, 0);
+			pstmt.setTimestamp(++i, DbAccessor.getCurrentTimeStamp());
+			pstmt.setInt(++i, data.status);
+			pstmt.setTimestamp(++i, DbAccessor.getCurrentTimeStamp());
+			
+			pstmt.executeUpdate();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
